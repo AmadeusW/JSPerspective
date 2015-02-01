@@ -1,3 +1,9 @@
+// Variables:
+// Distance from user's eyes (2ft, 120DPI)
+var userDistance = 24 * 120;
+// Height of each element
+var elementHeight = 30;
+
 // DRAW LOOP
 window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame;
 var updateCanvas = true;
@@ -31,6 +37,7 @@ var attentionCenter = {
 };
 var marginSize = 40;
 var imageDatas = [];
+var renderingKind = 1;
 
 $(document).ready(function(){
 	windowProperties.update();
@@ -41,6 +48,14 @@ $(document).ready(function(){
 		attentionCenter.y = (event.clientY - windowProperties.h /2);
 		updateCanvas = true; // Perhaps add condition to reduce number of calls
 	});	
+	$("#render1").click(function() {
+		renderingKind = 1;
+		elementHeight = 30;
+	});
+	$("#render2").click(function() {
+		renderingKind = 2;
+		elementHeight = 60;
+	});
 	console.log("Ready");
 });
 
@@ -76,12 +91,6 @@ function configureImages() {
 	
 }
 
-// Math:
-// Distance from user's eyes (2ft, 120DPI)
-var userDistance = 24 * 120;
-// Height of each element
-var elementHeight = 30;
-
 // DRAWING
 function draw(imageIndex){
 
@@ -101,11 +110,6 @@ function draw(imageIndex){
 	var depthX = -attentionCenter.x * elementHeight / userDistance;
 	var depthY = -attentionCenter.y * elementHeight / userDistance;
 
-	imageDatas[imageIndex].host.css("margin-left", marginSize + depthX);
-	imageDatas[imageIndex].host.css("margin-right", marginSize - depthX);
-	imageDatas[imageIndex].host.css("margin-top", marginSize + depthY);
-	imageDatas[imageIndex].host.css("margin-bottom", marginSize - depthY);
-
 	console.log("Depth: " + depthX + "; " + depthY);
 
 	// Top left corner calculation
@@ -123,27 +127,63 @@ function draw(imageIndex){
 
 	// Draw segments
 	ctx.strokeStyle = "#999";
-	ctx.beginPath();
-	// Connect the pieces that are moving:
-	// Top left corner:
-	ctx.moveTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
-	ctx.lineTo(adjustedX0, adjustedY0);
-	ctx.moveTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
-	// Top right corner:
-	ctx.lineTo(imageDatas[imageIndex].c2.x,imageDatas[imageIndex].c2.y);
-	ctx.lineTo(adjustedX1, adjustedY1);
-	ctx.moveTo(imageDatas[imageIndex].c2.x,imageDatas[imageIndex].c2.y);
-	// Bottom right corner:
-	ctx.lineTo(imageDatas[imageIndex].c3.x,imageDatas[imageIndex].c3.y);
-	ctx.lineTo(adjustedX2, adjustedY2);
-	ctx.moveTo(imageDatas[imageIndex].c3.x,imageDatas[imageIndex].c3.y);
-	// Bottom left corner:
-	ctx.lineTo(imageDatas[imageIndex].c4.x,imageDatas[imageIndex].c4.y);
-	ctx.lineTo(adjustedX3, adjustedY3);
-	ctx.moveTo(imageDatas[imageIndex].c4.x,imageDatas[imageIndex].c4.y);	
-	// Close back at the top left corner:
-	ctx.lineTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
-	ctx.stroke();
+	if (renderingKind == 1)
+	{
+		ctx.beginPath();
+		// Connect the pieces that are moving:
+		// Top left corner:
+		ctx.moveTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
+		ctx.lineTo(adjustedX0, adjustedY0);
+		ctx.moveTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
+		// Top right corner:
+		ctx.lineTo(imageDatas[imageIndex].c2.x,imageDatas[imageIndex].c2.y);
+		ctx.lineTo(adjustedX1, adjustedY1);
+		ctx.moveTo(imageDatas[imageIndex].c2.x,imageDatas[imageIndex].c2.y);
+		// Bottom right corner:
+		ctx.lineTo(imageDatas[imageIndex].c3.x,imageDatas[imageIndex].c3.y);
+		ctx.lineTo(adjustedX2, adjustedY2);
+		ctx.moveTo(imageDatas[imageIndex].c3.x,imageDatas[imageIndex].c3.y);
+		// Bottom left corner:
+		ctx.lineTo(imageDatas[imageIndex].c4.x,imageDatas[imageIndex].c4.y);
+		ctx.lineTo(adjustedX3, adjustedY3);
+		ctx.moveTo(imageDatas[imageIndex].c4.x,imageDatas[imageIndex].c4.y);	
+		// Close back at the top left corner:
+		ctx.lineTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
+		ctx.stroke();
+
+		imageDatas[imageIndex].host.css("margin-left", marginSize + depthX);
+		imageDatas[imageIndex].host.css("margin-right", marginSize - depthX);
+		imageDatas[imageIndex].host.css("margin-top", marginSize + depthY);
+		imageDatas[imageIndex].host.css("margin-bottom", marginSize - depthY);
+	}
+	else {
+		ctx.beginPath();
+		// Connect the pieces that are moving:
+		// Top left corner:
+		ctx.moveTo(adjustedX0, adjustedY0);
+		ctx.lineTo(imageDatas[imageIndex].c1.x,imageDatas[imageIndex].c1.y);
+		ctx.lineTo(adjustedX0, adjustedY0);
+		// Top right corner:
+		ctx.lineTo(adjustedX1, adjustedY1);
+		ctx.lineTo(imageDatas[imageIndex].c2.x,imageDatas[imageIndex].c2.y);
+		ctx.moveTo(adjustedX1, adjustedY1);
+		// Bottom right corner:
+		ctx.lineTo(adjustedX2, adjustedY2);
+		ctx.lineTo(imageDatas[imageIndex].c3.x,imageDatas[imageIndex].c3.y);
+		ctx.moveTo(adjustedX2, adjustedY2);
+		// Bottom left corner:
+		ctx.lineTo(adjustedX3, adjustedY3);
+		ctx.lineTo(imageDatas[imageIndex].c4.x,imageDatas[imageIndex].c4.y);
+		ctx.moveTo(adjustedX3, adjustedY3);
+		// Close back at the top left corner:
+		ctx.lineTo(adjustedX0, adjustedY0);
+		ctx.stroke();
+
+		imageDatas[imageIndex].host.css("margin-left", marginSize);
+		imageDatas[imageIndex].host.css("margin-right", marginSize);
+		imageDatas[imageIndex].host.css("margin-top", marginSize);
+		imageDatas[imageIndex].host.css("margin-bottom", marginSize);
+	}
 
 	// TODO: https://stackoverflow.com/questions/2688961/how-do-i-tint-an-image-with-html5-canvas
 	//ctx.drawImage(imageDatas[imageIndex].image, 50, 0, 1, 260, adjustedX0, adjustedY0, Math.abs(depthX), adjustedY3-adjustedY0);

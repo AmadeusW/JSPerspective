@@ -59,3 +59,8 @@ body {
 	width: 340px;
 	height: 340px;
 }
+
+.clickable {
+	cursor: pointer;
+	text-decoration: underline;
+}
